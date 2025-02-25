@@ -38,7 +38,7 @@ def timer(chat_id, time):
     bot.create_timer(parse(time), end_messege, author_id=tg_chat_id)
 
 
-def main():
+if __name__ == '__main__':
     load_dotenv('token.env')
     token = os.environ['BOT_API_TOKEN']
     tg_chat_id = os.environ['TG_CHAT_ID']
@@ -46,7 +46,3 @@ def main():
     start_messege(tg_chat_id)
     bot.reply_on_message(timer)
     bot.run_bot()
-
-
-if __name__ == '__main__':
-    main()
