@@ -13,36 +13,47 @@ def render_progressbar(total, iteration, prefix='', suffix='', length=30, fill='
     return '{0} |{1}| {2}% {3}'.format(prefix, pbar, percent, suffix)
 
 
-def notify_progress(secs_left, message_id, total_time):
+def notify_progress(secs_left, message_id, tg_chat_id, total_time, bot):
     messege = (
         f"Осталось секунд: {secs_left}\n{render_progressbar(total_time, total_time - secs_left)}"
         )
     bot.update_message(tg_chat_id, message_id, messege)
 
 
-def end_messege(author_id):
+def end_messege(tg_chat_id, bot):
     end_messege = "Время вышло"
-    bot.send_message(author_id, end_messege)
+    bot.send_message(tg_chat_id, end_messege)
     message = 'На сколько поставить таймер?'
-    bot.send_message(author_id, message)
+    bot.send_message(tg_chat_id, message)
 
 
-def start_messege(author_id):
-    start_messege = "Бот запущен!\nНа сколько поставить таймер?"
-    bot.send_message(author_id, start_messege)
+def timer(tg_chat_id, time, bot):
+    messege_id = bot.send_message(tg_chat_id, "Запускаю таймер")
+    bot.create_countdown(
+        parse(time),
+        notify_progress,
+        message_id=messege_id,
+        tg_chat_id=tg_chat_id,
+        total_time=parse(time),
+        bot=bot,
+    )
+    bot.create_timer(
+        parse(time),
+        end_messege,
+        tg_chat_id=tg_chat_id,
+        bot=bot,
+    )
 
 
-def timer(chat_id, time):
-    messege_id = bot.send_message(chat_id, "Запускаю таймер")
-    bot.create_countdown(parse(time), notify_progress, message_id=messege_id, total_time=parse(time))
-    bot.create_timer(parse(time), end_messege, author_id=tg_chat_id)
-
-
-if __name__ == '__main__':
+def main():
     load_dotenv('token.env')
     token = os.environ['BOT_API_TOKEN']
     tg_chat_id = os.environ['TG_CHAT_ID']
     bot = ptbot.Bot(token)
-    start_messege(tg_chat_id)
-    bot.reply_on_message(timer)
+    bot.send_message(tg_chat_id, 'Бот запущен!\nНа сколько поставить таймер?')
+    bot.reply_on_message(timer, bot=bot)
     bot.run_bot()
+
+
+if __name__ == '__main__':
+    main()
