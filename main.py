@@ -17,7 +17,7 @@ def notify_progress(secs_left, message_id, total_time):
     messege = (
         f"Осталось секунд: {secs_left}\n{render_progressbar(total_time, total_time - secs_left)}"
         )
-    BOT.update_message(tg_chat_id, message_id, messege)
+    bot.update_message(tg_chat_id, message_id, messege)
 
 
 def end_messege(author_id):
